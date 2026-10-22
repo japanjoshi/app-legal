@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baby Sleep Tracker: Nap Log</title>
+<meta name="description" content="Log naps and nights with one tap, even at 3 am. See how long your baby has been awake, last night as one night, and totals that add up. No account, no ads, no AI. Free for 7 days, then pay once.">
+<meta name="theme-color" content="#120E0C">
+<meta property="og:title" content="Baby Sleep Tracker: Nap Log">
+<meta property="og:description" content="One tap. Even at 3 am. A calm baby sleep log with no account, no ads and no AI.">
+<meta property="og:image" content="img/screen-1-home.jpg">
+<meta name="apple-itunes-app" content="app-id=6825657676">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #120E0C;
+    --surface: #1C1613;
+    --raised: #261E1A;
+    --line: #3A2F28;
+    --ember: #E07A4F;
+    --on-ember: #1E0F08;
+    --honey: #E3B06A;
+    --glow: #F4B77E;
+    --ink: #F2E6DA;
+    --muted: #B8A595;
+    --radius: 20px;
+    --page: min(1120px, 100% - 40px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 18px/1.55 "Atkinson Hyperlegible Next", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: var(--glow); }
+  img { max-width: 100%; height: auto; display: block; }
+  .wrap { width: var(--page); margin: 0 auto; }
+
+  /* Top bar */
+  header.bar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  }
+  .bar .wrap { display: flex; align-items: center; gap: 12px; height: 64px; }
+  .bar .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 700; }
+  .bar .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .bar nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+  .bar nav a { color: var(--muted); text-decoration: none; font-size: 16px; }
+  .bar nav a:hover { color: var(--ink); }
+  .bar nav .cta { color: var(--on-ember); background: var(--ember); padding: 8px 16px; border-radius: 999px; font-weight: 700; }
+  .bar nav .cta:hover { color: var(--on-ember); filter: brightness(1.06); }
+  @media (max-width: 720px) { .bar nav a:not(.cta) { display: none; } }
+
+  /* Hero */
+  .hero { position: relative; padding: 64px 0 32px; }
+  .hero::before {
+    content: ""; position: absolute; inset: -120px 0 auto 0; height: 720px; pointer-events: none;
+    background: radial-gradient(closest-side at 72% 45%, rgba(224,122,79,.28), rgba(224,122,79,0) 70%);
+  }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+  .overline { color: var(--ember); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 14px; margin: 0 0 14px; }
+  h1 { font-size: clamp(40px, 6vw, 68px); line-height: 1.04; margin: 0 0 20px; font-weight: 700; letter-spacing: -.02em; }
+  h1 em { font-style: normal; color: var(--ember); }
+  .lead { font-size: clamp(18px, 2.1vw, 21px); color: var(--muted); max-width: 34em; margin: 0 0 32px; }
+  .store-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .appstore {
+    display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+    background: var(--ink); color: #111; border-radius: 14px; padding: 11px 20px 11px 16px;
+    transition: transform .15s ease;
+  }
+  .appstore:hover { transform: translateY(-1px); }
+  .appstore svg { width: 26px; height: 26px; }
+  .appstore small { display: block; font-size: 12px; line-height: 1.1; }
+  .appstore b { display: block; font-size: 20px; line-height: 1.1; }
+  .price-note { color: var(--muted); font-size: 15px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; padding: 0; list-style: none; }
+  .pills li { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 15px; color: var(--muted); }
+  .pills li::before { content: "✓"; color: var(--ember); margin-right: 8px; font-weight: 700; }
+
+  .phone {
+    justify-self: center; width: min(320px, 78vw);
+    border-radius: 46px; padding: 10px; background: #070504;
+    border: 1px solid var(--line);
+    box-shadow: 0 40px 120px rgba(224,122,79,.18), 0 20px 50px rgba(0,0,0,.6);
+  }
+  .phone img { border-radius: 34px; }
+  @media (max-width: 880px) {
+    .hero .wrap { grid-template-columns: 1fr; text-align: left; }
+    .phone { transform: none; margin-top: 8px; }
+  }
+
+  /* Sections */
+  section { padding: 72px 0; }
+  h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.1; margin: 0 0 14px; letter-spacing: -.01em; }
+  .section-lead { color: var(--muted); max-width: 40em; margin: 0 0 40px; font-size: 19px; }
+
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .card {
+    background: var(--surface); border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    border-radius: var(--radius); padding: 28px;
+  }
+  .card .icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--raised); margin-bottom: 18px; }
+  .card .icon svg { width: 24px; height: 24px; stroke: var(--ember); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { margin: 0 0 10px; font-size: 22px; }
+  .card ul { margin: 0; padding: 0; list-style: none; color: var(--muted); }
+  .card li { padding: 5px 0 5px 22px; position: relative; }
+  .card li::before { content: ""; position: absolute; left: 0; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--honey); }
+  @media (max-width: 760px) { .features { grid-template-columns: 1fr; } }
+
+  /* Gallery */
+  .gallery {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 260px); gap: 20px;
+    overflow-x: auto; padding: 4px 4px 22px; scroll-snap-type: x mandatory;
+    scrollbar-color: var(--line) transparent;
+  }
+  .gallery figure { margin: 0; scroll-snap-align: start; }
+  .gallery .frame { background: #070504; border: 1px solid var(--line); border-radius: 34px; padding: 8px; }
+  .gallery img { border-radius: 27px; }
+  .gallery figcaption { text-align: center; color: var(--muted); font-size: 16px; margin-top: 14px; }
+
+  /* Night band */
+  .night { background: #000; border-top: 1px solid #1a1411; border-bottom: 1px solid #1a1411; }
+  .night .wrap { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: center; }
+  .night .shot { width: min(300px, 75vw); justify-self: center; border-radius: 42px; overflow: hidden; border: 1px solid #2a1f19; padding: 8px; background: #000; }
+  .night .shot img { border-radius: 34px; }
+  .night h2 { color: #C86A45; }
+  .night p { color: #9c7a66; font-size: 19px; }
+  @media (max-width: 880px) { .night .wrap { grid-template-columns: 1fr; } .night .shot { order: 2; } }
+
+  /* Pricing */
+  .price { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .price .card.main { background: linear-gradient(160deg, #2a1d16, var(--surface)); border-color: color-mix(in srgb, var(--ember) 45%, transparent); }
+  .big { font-size: 56px; font-weight: 300; line-height: 1; margin: 6px 0 4px; }
+  .big small { font-size: 20px; color: var(--muted); font-weight: 400; }
+  @media (max-width: 760px) { .price { grid-template-columns: 1fr; } }
+
+  /* FAQ */
+  details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+  details summary { cursor: pointer; font-weight: 700; font-size: 19px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; color: var(--ember); font-weight: 300; font-size: 26px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin: 12px 0 0; }
+
+  /* Closing */
+  .closing { text-align: center; padding: 88px 0; position: relative; }
+  .closing::before { content: ""; position: absolute; inset: 0; background: radial-gradient(closest-side at 50% 50%, rgba(224,122,79,.2), transparent 70%); pointer-events: none; }
+  .closing .wrap { position: relative; }
+  .closing img.icon { width: 104px; height: 104px; border-radius: 24px; margin: 0 auto 24px; box-shadow: 0 20px 60px rgba(224,122,79,.25); }
+  .closing .store-row { justify-content: center; margin-top: 26px; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 15px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+  footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer a { color: var(--muted); }
+  footer .note { flex-basis: 100%; font-size: 14px; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .appstore { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/icon.png" alt="">Baby Sleep Log</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Questions</a>
+      <a class="cta" href="https://apps.apple.com/app/id6825657676">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="overline">Baby sleep tracker</p>
+        <h1>One tap.<br><em>Even at 3 am.</em></h1>
+        <p class="lead">Tap once when your baby falls asleep and once when they wake. See how long they've been awake, how last night went, and how much they've slept today. Nothing else gets in the way.</p>
+        <div class="store-row">
+          <a class="appstore" href="https://apps.apple.com/app/id6825657676" aria-label="Download on the App Store">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.72-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.17-1.53 2.65-.39 6.57 1.1 8.72.73 1.05 1.6 2.23 2.73 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.3-.88-2.32-3.49zM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.56-1.23z"/></svg>
+            <span><small>Download on the</small><b>App Store</b></span>
+          </a>
+          <span class="price-note">Free for 7 days, then $9.99 once.</span>
+        </div>
+        <ul class="pills">
+          <li>No account</li><li>No ads</li><li>No AI</li><li>No subscription</li>
+        </ul>
+      </div>
+      <div class="phone"><img src="img/screen-1-home.jpg" alt="The home screen: awake for 1:35, a large Fell asleep button, last night and today's totals." width="860" height="1864"></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <p class="overline">Why parents use it</p>
+      <h2>Facts you can trust, in a screen that stays calm.</h2>
+      <p class="section-lead">Big trackers predict, nag and keep moving the buttons. This one keeps the clock, the log and the totals, and stays the same tomorrow.</p>
+      <div class="features">
+        <article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>Built for 3 am</h3>
+          <ul>
+            <li>One large button, easy to hit with a baby in one arm</li>
+            <li>A warm, dark screen with no blue glare</li>
+            <li>Tapped by mistake? Undo. Forgot to tap? Fix it to the minute</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div>
+          <h3>Last night, as one night</h3>
+          <ul>
+            <li>Hours asleep, bedtime to morning, and how often they woke</li>
+            <li>Today's naps and night sleep, counted midnight to midnight</li>
+            <li>Nothing counted twice, nothing guessed</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
+          <h3>Your awake target, not our guess</h3>
+          <ul>
+            <li>Set the awake time you're aiming for, if you have one</li>
+            <li>A ring fills as your baby gets close</li>
+            <li>One optional, quiet reminder. We never suggest a number</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3>Stays on your phone</h3>
+          <ul>
+            <li>No account and no sign-in</li>
+            <li>Your log never leaves your iPhone</li>
+            <li>Export everything as a CSV for the pediatrician</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="night">
+    <div class="wrap">
+      <div class="shot"><img src="img/screen-3-night-view.jpg" alt="The night view: a black screen with only the asleep clock and a Woke up button." width="860" height="1864" loading="lazy"></div>
+      <div>
+        <p class="overline">The night view</p>
+        <h2>A screen that stays dark.</h2>
+        <p>While your baby sleeps through the night, the app goes black: just the clock and one soft ring to tap when they wake. Start and stop from the Lock Screen widget too, with a Live Activity while they sleep.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="overline">A closer look</p>
+      <h2>Everything on one calm screen.</h2>
+      <p class="section-lead">Swipe through the app.</p>
+      <div class="gallery" tabindex="0" aria-label="App screenshots">
+        <figure><div class="frame"><img src="img/screen-1-home.jpg" alt="Home: the awake clock, the main button and today's totals" width="860" height="1864" loading="lazy"></div><figcaption>Awake for, at a glance</figcaption></figure>
+        <figure><div class="frame"><img src="img/screen-2-last-night.jpg" alt="Last night shown as one night" width="860" height="1864" loading="lazy"></div><figcaption>Last night, as one night</figcaption></figure>
+        <figure><div class="frame"><img src="img/screen-4-history.jpg" alt="Two weeks of history as bars" width="860" height="1864" loading="lazy"></div><figcaption>Two weeks at a glance</figcaption></figure>
+        <figure><div class="frame"><img src="img/screen-5-target.jpg" alt="Setting your own awake target" width="860" height="1864" loading="lazy"></div><figcaption>Your target, not our guess</figcaption></figure>
+        <figure><div class="frame"><img src="img/screen-6-deal.jpg" alt="Free for 7 days, then one payment" width="860" height="1864" loading="lazy"></div><figcaption>The deal, up front</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <p class="overline">Pricing</p>
+      <h2>A deal that stays put.</h2>
+      <p class="section-lead">Stated before you log anything, and never changed later.</p>
+      <div class="price">
+        <div class="card">
+          <h3>First 7 days</h3>
+          <p class="big">Free</p>
+          <ul>
+            <li>Every feature, from the first tap</li>
+            <li>No charge, and nothing to cancel</li>
+          </ul>
+        </div>
+        <div class="card main">
+          <h3>After that</h3>
+          <p class="big">$9.99 <small>once</small></p>
+          <ul>
+            <li>Keep logging every nap and night, for good</li>
+            <li>Nothing renews. Family Sharing included</li>
+            <li>History, edits and export stay free either way</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <p class="overline">Questions</p>
+      <h2>Good to know.</h2>
+      <details><summary>Is it a subscription?</summary><p>No. After the free week, one payment of $9.99 keeps logging going for good. Nothing renews, and there is nothing to cancel.</p></details>
+      <details><summary>What happens after the free week if I don't pay?</summary><p>You can still end a sleep that's running, and view, edit, delete and export everything you've logged. Only logging new sleeps needs the one-time unlock.</p></details>
+      <details><summary>Do I need an account?</summary><p>No. There is no sign-in. Your log stays on your iPhone and is included in your iCloud or computer backup like your other apps.</p></details>
+      <details><summary>Does it predict naps or tell me what to do?</summary><p>No. It records what happened and adds it up. You can set your own awake target if you like, but the app never suggests one. It's a log, not medical advice; talk to your pediatrician about your baby's sleep.</p></details>
+      <details><summary>Can my partner use it too?</summary><p>Family Sharing is on for the unlock, so a partner can unlock it on their own iPhone. Each phone keeps its own log.</p></details>
+      <details><summary>Does it track feeds or diapers?</summary><p>No, on purpose. It does one job, sleep, so the screen stays simple at night.</p></details>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <img class="icon" src="img/icon.png" alt="" width="104" height="104">
+      <h2>Sleep is most of your baby's day.<br>Know it at a glance.</h2>
+      <div class="store-row">
+        <a class="appstore" href="https://apps.apple.com/app/id6825657676" aria-label="Download on the App Store">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.72-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.17-1.53 2.65-.39 6.57 1.1 8.72.73 1.05 1.6 2.23 2.73 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.3-.88-2.32-3.49zM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.56-1.23z"/></svg>
+          <span><small>Download on the</small><b>App Store</b></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 1213 Studios</span>
+    <nav>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="mailto:japanjoshi1234@gmail.com">Contact</a>
+    </nav>
+    <p class="note">Baby Sleep Tracker: Nap Log is a record-keeping tool for parents. It does not give medical or safe-sleep advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>
