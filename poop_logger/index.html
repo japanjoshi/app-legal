@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloop: Poop Tracker &amp; IBS Log</title>
+<meta name="description" content="A private poop tracker and bowel movement log. Log in one tap and see how long it's been against your own usual. Bristol type, daily check-ins and a doctor report. No ads, no account, no subscription.">
+<meta name="theme-color" content="#1B4D24">
+<meta property="og:title" content="Bloop: Poop Tracker &amp; IBS Log">
+<meta property="og:description" content="Know what's normal for you. One tap logs it. No ads, no account, and Bloop Plus is one payment, not a subscription.">
+<meta property="og:image" content="https://japanjoshi.github.io/app-legal/poop_logger/img/screen-1-today.jpg">
+<meta name="apple-itunes-app" content="app-id=6826648632">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --green: #2F7D3A;
+    --deep: #1B4D24;
+    --night: #12351A;
+    --cream: #F7FBF5;
+    --mint: #D4F3DA;
+    --mint-soft: #EAF7EC;
+    --gold: #FFD166;
+    --ink: #17231A;
+    --muted: #4E5F52;
+    --line: #DCE8DE;
+    --device: #111318;
+    --radius: 24px;
+    --page: min(1120px, 100% - 32px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font: 400 18px/1.55 "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: var(--green); }
+  img { max-width: 100%; height: auto; display: block; }
+  .wrap { width: var(--page); margin: 0 auto; }
+
+  /* Top bar */
+  header.bar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--deep) 88%, transparent);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .bar .wrap { display: flex; align-items: center; gap: 12px; height: 64px; }
+  .bar .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--cream); font-weight: 800; font-size: 20px; }
+  .bar .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .bar nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+  .bar nav a { color: var(--mint); text-decoration: none; font-size: 16px; font-weight: 600; }
+  .bar nav a:hover { color: #fff; }
+  .bar nav .cta { color: var(--deep); background: var(--gold); padding: 8px 16px; border-radius: 999px; font-weight: 800; }
+  .bar nav .cta:hover { color: var(--deep); filter: brightness(1.05); }
+  @media (max-width: 720px) { .bar nav a:not(.cta) { display: none; } }
+
+  /* Hero */
+  .hero {
+    position: relative; overflow: hidden; color: var(--cream);
+    background: linear-gradient(180deg, var(--deep) 0%, var(--green) 100%);
+    padding: 64px 0 0;
+  }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: end; }
+  .hero .copy { padding-bottom: 72px; }
+  .overline { color: var(--green); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; margin: 0 0 14px; }
+  .hero .overline { color: var(--gold); }
+  h1 { font-size: clamp(42px, 6.4vw, 72px); line-height: 1.02; margin: 0 0 20px; font-weight: 800; letter-spacing: -.025em; }
+  .lead { font-size: clamp(18px, 2.1vw, 21px); color: var(--mint); max-width: 32em; margin: 0 0 32px; }
+  .store-row { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+  .appstore {
+    display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+    background: #000; color: #fff; border-radius: 14px; padding: 11px 20px 11px 16px;
+    border: 1px solid rgba(255,255,255,.25);
+    transition: transform .15s ease;
+  }
+  .appstore:hover { transform: translateY(-1px); }
+  .appstore svg { width: 26px; height: 26px; }
+  .appstore small { display: block; font-size: 12px; line-height: 1.1; }
+  .appstore b { display: block; font-size: 20px; line-height: 1.1; }
+  .price-note { color: var(--mint); font-size: 15px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 0; padding: 0; list-style: none; }
+  .pills li { background: rgba(255,255,255,.1); border: 1px solid rgba(212,243,218,.3); border-radius: 999px; padding: 6px 14px; font-size: 15px; font-weight: 600; }
+  .pills li::before { content: "✓"; color: var(--gold); margin-right: 8px; font-weight: 800; }
+
+  .hero .stage { position: relative; justify-self: center; width: min(340px, 82vw); }
+  .hero .stage .milo { position: absolute; width: 46%; left: -30%; bottom: 18%; filter: drop-shadow(0 18px 30px rgba(0,0,0,.25)); }
+  .phone {
+    border-radius: 48px 48px 0 0; padding: 11px 11px 0; background: var(--device);
+    box-shadow: 0 -10px 80px rgba(0,0,0,.25);
+  }
+  .phone img { border-radius: 38px 38px 0 0; aspect-ratio: 860 / 1500; object-fit: cover; object-position: top; }
+  @media (max-width: 880px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero .copy { padding-bottom: 8px; }
+    .hero .stage .milo { display: none; }
+  }
+
+  /* Sections */
+  section { padding: 88px 0; }
+  h2 { font-size: clamp(32px, 4.2vw, 48px); line-height: 1.06; margin: 0 0 16px; letter-spacing: -.02em; font-weight: 800; color: var(--deep); }
+  .section-lead { color: var(--muted); max-width: 40em; margin: 0 0 40px; font-size: 19px; }
+  .tag { display: inline-block; background: var(--gold); color: var(--deep); font-weight: 800; font-size: 14px; border-radius: 999px; padding: 4px 12px; margin: 0 0 16px; }
+
+  /* Feature rows */
+  .rows { display: grid; gap: 96px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .row.flip .text { order: 2; }
+  .row .text p { color: var(--muted); font-size: 19px; margin: 0 0 18px; }
+  .row ul { margin: 0; padding: 0; list-style: none; color: var(--muted); }
+  .row li { padding: 6px 0 6px 30px; position: relative; }
+  .row li::before { content: ""; position: absolute; left: 0; top: 11px; width: 18px; height: 18px; border-radius: 50%; background: var(--mint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F7D3A' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center / 12px no-repeat; }
+  .shot {
+    justify-self: center; width: min(320px, 78vw); position: relative;
+    border-radius: 46px; padding: 10px; background: var(--device);
+    box-shadow: 0 30px 80px rgba(27,77,36,.22), 0 10px 24px rgba(0,0,0,.12);
+  }
+  .shot img { border-radius: 36px; }
+  .shot .milo { position: absolute; width: 42%; left: -34%; bottom: 6%; filter: drop-shadow(0 14px 24px rgba(0,0,0,.18)); }
+  @media (max-width: 880px) {
+    .rows { gap: 72px; }
+    .row { grid-template-columns: 1fr; gap: 32px; }
+    .row.flip .text { order: 0; }
+    .shot .milo { display: none; }
+  }
+
+  /* Privacy band */
+  .private { background: var(--deep); color: var(--cream); }
+  .private h2 { color: var(--cream); }
+  .private .overline { color: var(--gold); }
+  .private .wrap { display: grid; grid-template-columns: .8fr 1.2fr; gap: 56px; align-items: center; }
+  .private .milo { width: min(340px, 70vw); justify-self: center; filter: drop-shadow(0 24px 40px rgba(0,0,0,.3)); }
+  .private p { color: var(--mint); font-size: 19px; margin: 0 0 28px; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .fact { background: rgba(255,255,255,.07); border: 1px solid rgba(212,243,218,.18); border-radius: 18px; padding: 18px 20px; }
+  .fact b { display: block; font-size: 18px; margin-bottom: 4px; }
+  .fact span { color: var(--mint); font-size: 16px; }
+  @media (max-width: 880px) { .private .wrap { grid-template-columns: 1fr; } .private .milo { width: min(220px, 56vw); } }
+  @media (max-width: 560px) { .facts { grid-template-columns: 1fr; } }
+
+  /* Pricing */
+  .price { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 30px; }
+  .card h3 { margin: 0; font-size: 22px; color: var(--deep); }
+  .card.main { background: linear-gradient(160deg, var(--mint-soft), #fff 70%); border: 2px solid var(--green); }
+  .big { font-size: 56px; font-weight: 800; line-height: 1; margin: 12px 0 18px; color: var(--deep); letter-spacing: -.02em; }
+  .big small { font-size: 20px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+  .card ul { margin: 0; padding: 0; list-style: none; color: var(--muted); }
+  .card li { padding: 6px 0 6px 22px; position: relative; }
+  .card li::before { content: ""; position: absolute; left: 0; top: 15px; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  @media (max-width: 760px) { .price { grid-template-columns: 1fr; } }
+
+  /* FAQ */
+  #faq { background: #fff; border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+  details summary { cursor: pointer; font-weight: 700; font-size: 19px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; color: var(--green); font-weight: 600; font-size: 26px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin: 12px 0 0; }
+
+  /* Closing */
+  .closing { text-align: center; background: linear-gradient(180deg, var(--green), var(--deep)); color: var(--cream); }
+  .closing .milo { width: 180px; margin: 0 auto 16px; filter: drop-shadow(0 18px 30px rgba(0,0,0,.25)); }
+  .closing h2 { color: var(--cream); }
+  .closing p { color: var(--mint); margin: 0; }
+  .closing .store-row { justify-content: center; margin-top: 28px; }
+
+  footer { background: var(--night); color: var(--mint); padding: 32px 0 48px; font-size: 15px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+  footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer a { color: var(--mint); }
+  footer .note { flex-basis: 100%; font-size: 14px; opacity: .8; margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .appstore { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/icon.png" alt="">Bloop</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Questions</a>
+      <a class="cta" href="https://apps.apple.com/app/id6826648632">Get Bloop</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <p class="overline">Poop tracker &amp; bowel movement log</p>
+        <h1>Know what's normal for you.</h1>
+        <p class="lead">Tap once to log. Bloop shows how long it's been next to your own usual gap, worked out from your logs. Add the Bristol type, colour and notes only if you want to.</p>
+        <div class="store-row">
+          <a class="appstore" href="https://apps.apple.com/app/id6826648632" aria-label="Download Bloop on the App Store">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.72-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.17-1.53 2.65-.39 6.57 1.1 8.72.73 1.05 1.6 2.23 2.73 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.3-.88-2.32-3.49zM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.56-1.23z"/></svg>
+            <span><small>Download on the</small><b>App Store</b></span>
+          </a>
+          <span class="price-note">Free to log. Bloop Plus is $6.99, once.</span>
+        </div>
+        <ul class="pills">
+          <li>No ads</li><li>No account</li><li>No subscription</li><li>Stays on your phone</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <img class="milo" src="img/milo-happy.png" alt="" width="640" height="640">
+        <div class="phone"><img src="img/screen-1-today.jpg" alt="Today in Bloop: 10 h 48 min since the last movement, You usually go about once a day, and a large Log a movement button." width="860" height="1864"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="rows">
+        <div class="row">
+          <div class="text">
+            <p class="overline">Log in one tap</p>
+            <h2>Bristol type in one tap. The rest if you like.</h2>
+            <p>One button saves the time. A details sheet follows, and every part of it is optional.</p>
+            <ul>
+              <li>Bristol type, up to two per visit</li>
+              <li>Nine colours, amount and time on the loo</li>
+              <li>Flags such as blood, pain, straining or urgency, and a note</li>
+              <li>A free Home Screen widget: one tap opens Bloop and logs</li>
+            </ul>
+          </div>
+          <div class="shot"><img src="img/screen-3-details.jpg" alt="The details sheet straight after logging, with Type 4 picked, amount, flags, time on the loo and colour." width="860" height="1864" loading="lazy"></div>
+        </div>
+
+        <div class="row flip">
+          <div class="text">
+            <p class="overline">Your day, beside your log</p>
+            <h2>Water, food and sleep in ten seconds.</h2>
+            <p>A daily check-in with one tap per row, so you can see what goes with your good days and your bad ones.</p>
+            <ul>
+              <li>Water, meals and food, sleep, activity and stress</li>
+              <li>Medicines and, if you choose, your period</li>
+              <li>Each day shows its logs and its check-in side by side</li>
+            </ul>
+          </div>
+          <div class="shot"><img src="img/screen-4-checkin.jpg" alt="The daily check-in: four glasses of water, sleep, food chips and two meals noted." width="860" height="1864" loading="lazy"></div>
+        </div>
+
+        <div class="row">
+          <div class="text">
+            <span class="tag">Bloop Plus</span>
+            <h2>Spot what's changing, in plain words.</h2>
+            <p>Insights answer the question first, then show the chart. "Mostly steady, one longer gap" beats a wall of lines.</p>
+            <ul>
+              <li>Gaps between movements against your usual</li>
+              <li>Bristol types week by week, and the time of day you go</li>
+              <li>Patterns: what your food, water, sleep and stress line up with</li>
+              <li>From the last 14 days to all time</li>
+            </ul>
+          </div>
+          <div class="shot"><img src="img/screen-5-insights.jpg" alt="Insights for the last 30 days: Mostly steady, one longer gap, with a chart of gaps against your usual." width="860" height="1864" loading="lazy"></div>
+        </div>
+
+        <div class="row flip">
+          <div class="text">
+            <span class="tag">Bloop Plus</span>
+            <h2>A report your doctor can read.</h2>
+            <p>Doctors ask how often, what type and for how long. Bring the answer as a clean PDF, for any date range.</p>
+            <ul>
+              <li>Gaps, Bristol types, flags and daily check-ins</li>
+              <li>Every entry, listed in full</li>
+              <li>Your name on it if you want, printed on the PDF only</li>
+            </ul>
+          </div>
+          <div class="shot">
+            <img src="img/screen-6-report.jpg" alt="The doctor report screen: 30 days, what's in it, and a Make PDF report button." width="860" height="1864" loading="lazy">
+            <img class="milo" src="img/milo-clipboard.png" alt="" width="640" height="640" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="private">
+    <div class="wrap">
+      <img class="milo" src="img/milo-shield.png" alt="Milo, Bloop's gut buddy, holding a shield." width="640" height="640" loading="lazy">
+      <div>
+        <p class="overline">Private by design</p>
+        <h2>It's your business. It stays that way.</h2>
+        <p>Bloop is a log, not a social network. There's nothing to sign up for and nothing to share unless you choose to.</p>
+        <div class="facts">
+          <div class="fact"><b>No account</b><span>Open it and log. No email, no sign-in.</span></div>
+          <div class="fact"><b>On your iPhone</b><span>Your log is kept on your phone, not on our servers.</span></div>
+          <div class="fact"><b>Discreet reminders</b><span>Notification text never mentions bowel movements.</span></div>
+          <div class="fact"><b>Yours to take</b><span>Backups and a CSV export, free, any time.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <p class="overline">Pricing</p>
+      <h2>Free to log. Pay once for more.</h2>
+      <p class="section-lead">No ads, no trial that turns into a bill, and nothing that renews.</p>
+      <div class="price">
+        <div class="card">
+          <h3>Bloop</h3>
+          <p class="big">Free</p>
+          <ul>
+            <li>Unlimited one-tap logs with every detail</li>
+            <li>History, the calendar and each day at a glance</li>
+            <li>The daily check-in and reminders</li>
+            <li>Home Screen widget, backups and CSV export</li>
+          </ul>
+        </div>
+        <div class="card main">
+          <h3>Bloop Plus</h3>
+          <p class="big">$6.99 <small>once</small></p>
+          <ul>
+            <li>Insights and Patterns</li>
+            <li>The doctor report as a PDF</li>
+            <li>Quick log from the Lock Screen, Control Center, the Action Button or Siri</li>
+            <li>Shared with your family through Family Sharing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <p class="overline">Questions</p>
+      <h2>Good to know.</h2>
+      <details><summary>Is Bloop Plus a subscription?</summary><p>No. It's one payment of $6.99 and it's yours. Nothing renews and there's nothing to cancel. Logging, history and check-ins stay free either way.</p></details>
+      <details><summary>Do I need an account?</summary><p>No. There's no sign-in. Your log stays on your iPhone. To move phones, save a backup file in Settings and restore it on the new one.</p></details>
+      <details><summary>Who can see my logs?</summary><p>Only you, on your phone. Nothing is shared unless you export a CSV or make a doctor report and send it yourself.</p></details>
+      <details><summary>What does "usual for you" mean?</summary><p>Bloop works out your typical gap between movements from your own logs (or from what you tell it on the first day) and shows the time since your last one next to it. If it's been much longer than usual, Today says so.</p></details>
+      <details><summary>Is it useful for IBS or constipation?</summary><p>Many people use a log like this for IBS, IBD, constipation, a new medicine or before a doctor's appointment. Bloop keeps the record; it doesn't diagnose or give medical advice.</p></details>
+      <details><summary>Who is Milo?</summary><p>Milo is Bloop's gut buddy. He walks you through the basics, like the Bristol scale, and has opinions about your logging. He runs entirely on your phone; there's no AI chat.</p></details>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <img class="milo" src="img/milo-wink.png" alt="" width="640" height="640" loading="lazy">
+      <h2>One tap. Your normal.</h2>
+      <p>Free on iPhone. No ads, no account.</p>
+      <div class="store-row">
+        <a class="appstore" href="https://apps.apple.com/app/id6826648632" aria-label="Download Bloop on the App Store">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.72-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.17-1.53 2.65-.39 6.57 1.1 8.72.73 1.05 1.6 2.23 2.73 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.3-.88-2.32-3.49zM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.56-1.23z"/></svg>
+          <span><small>Download on the</small><b>App Store</b></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 1213 Studios</span>
+    <nav>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="mailto:japanjoshi1234@gmail.com?subject=Bloop">Contact</a>
+    </nav>
+    <p class="note">Bloop is a record-keeping tool. It isn't a medical device and doesn't give medical advice. If you notice blood, ongoing pain or a lasting change in your bowel habits, talk to your doctor.</p>
+  </div>
+</footer>
+
+</body>
+</html>
